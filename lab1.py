@@ -97,9 +97,22 @@ def generate_rand_facts(code_max, M):
         facts.append(randint(0, code_max))
     return facts
 
+
 def check_rules(rules):
+    if_rules = list()
+    then_rules = list()
     for rule in rules:
-        if 
+        if rule['if']:
+            if_rules.append(rule['if'])
+        if rule['then']:
+            then_rules.append(rule['then'])
+    size = len(rules)
+    for i in range(size-1):
+        for j in range(i+1, size):
+            if if_rules[i] == if_rules[j]:
+                if then_rules[i] != then_rules[j]:
+                    print(i, ' disagree ', j)
+
 
 def check_rules_vs_facts(rules, facts):
     result = list()
@@ -122,6 +135,7 @@ def check_rules_vs_facts(rules, facts):
                 for item in rule['if'][key]:
                     if item in facts:
                         result.append(rule['then'])
+                        break
             if key == 'not':
                 for item in rule['if'][key]:
                     size = len(rule['if'][key])
@@ -133,7 +147,7 @@ def check_rules_vs_facts(rules, facts):
                 else:
                     result.append(0)
                     temp = 0
-
+    print(result)
 # samples:
 print(generate_simple_rules(100, 4, 10))
 print(generate_random_rules(100, 4, 10))
@@ -142,19 +156,17 @@ print(generate_ring_rules(100, 4, 10, ["or"]))
 
 # generate rules and facts and check time
 time_start = time()
-N = 100000
+N = 10000
 M = 1000
 rules = generate_simple_rules(100, 4, N)
 facts = generate_rand_facts(100, M)
 print("%d rules generated in %f seconds" % (N, time() - time_start))
-
 # load and validate rules
 # YOUR CODE HERE
-
-check_rules_vs_facts(rules, facts)
+check_rules(rules)
 # check facts vs rules
 time_start = time()
 
 # YOUR CODE HERE
-
+check_rules_vs_facts(rules, facts)
 print("%d facts validated vs %d rules in %f seconds" % (M, N, time() - time_start))
