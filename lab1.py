@@ -99,6 +99,7 @@ def generate_rand_facts(code_max, M):
 
 
 def check_rules(rules):
+    start_check = time()
     if_rules = list()
     then_rules = list()
     for rule in rules:
@@ -112,9 +113,13 @@ def check_rules(rules):
             if if_rules[i] == if_rules[j]:
                 if then_rules[i] != then_rules[j]:
                     print(i, ' disagree ', j)
+    end_check = time()
+    time_result = end_check - start_check
+    print('\ntime to check conflicts ',time_result)
 
 
 def check_rules_vs_facts(rules, facts):
+    start_check = time()
     result = list()
     temp = 0
     size = 0
@@ -148,6 +153,11 @@ def check_rules_vs_facts(rules, facts):
                     result.append(0)
                     temp = 0
     print(result)
+    end_check = time()
+    time_result = end_check - start_check
+    print('\ntime to check facts vs rules ', time_result)
+
+
 # samples:
 print(generate_simple_rules(100, 4, 10))
 print(generate_random_rules(100, 4, 10))
