@@ -102,6 +102,8 @@ def update_indexes(indexes_wrong):
     for i in indexes_wrong:
         i -= 1
 
+# not final version
+
 
 def check_rules(rules):  # check "if A then B -> if A then C"
     start_check = time()
