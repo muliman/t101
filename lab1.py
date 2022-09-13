@@ -98,24 +98,33 @@ def generate_rand_facts(code_max, M):
     return facts
 
 
-def check_rules(rules):
+def update_indexes(indexes_wrong):
+    for i in indexes_wrong:
+        i -= 1
+
+
+def check_rules(rules):  # check "if A then B -> if A then C"
     start_check = time()
     if_rules = list()
     then_rules = list()
+    size = len(rules)
+    indexes_wrong_rules = [0 for i in range(size)]
+    correct_rules = list()
     for rule in rules:
         if rule['if']:
             if_rules.append(rule['if'])
         if rule['then']:
             then_rules.append(rule['then'])
-    size = len(rules)
-    for i in range(size-1):
-        for j in range(i+1, size):
-            if if_rules[i] == if_rules[j]:
-                if then_rules[i] != then_rules[j]:
-                    print(i, ' disagree ', j)
+    for i in range(size - 1):
+        for j in range(i + 1, size):
+            if if_rules[i] == if_rules[j] and then_rules[i] != then_rules[j]:
+                indexes_wrong_rules[i] = -1
+                indexes_wrong_rules[j] = -1
+                print(i, ' disagree ', j)
+    print('LEN ', indexes_wrong_rules)
     end_check = time()
     time_result = end_check - start_check
-    print('\ntime to check conflicts ',time_result)
+    print('\ntime to check conflicts ', time_result)
 
 
 def check_rules_vs_facts(rules, facts):
