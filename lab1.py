@@ -101,7 +101,7 @@ def generate_rand_facts(code_max, M):
 # not final version
 
 
-def check_rules(rules):  # check "if A then B -> if A then C"
+def check_rules(rules):
     start_check = time()
     if_rules = list()
     then_rules = list()
@@ -114,10 +114,19 @@ def check_rules(rules):  # check "if A then B -> if A then C"
             then_rules.append(rule['then'])
     for i in range(size - 1):
         for j in range(i + 1, size):
-            if if_rules[i] == if_rules[j] and then_rules[i] != then_rules[j]:
+            if if_rules[i] == if_rules[j] and then_rules[i] != then_rules[j]: # check "if A then B -> if A then C"
                 rules[i].clear()
                 rules[j].clear()
                 print(i, ' disagree ', j)
+            if then_rules[i] == then_rules[j]:  # check "if and/or A then B -> if not A then B"
+                if if_rules[i]['and'] == if_rules[j]['not'] or if_rules[j]['and'] == if_rules[i]['not']:
+                    rules[i].clear()
+                    rules[j].clear()
+                    print(i, ' another disagree ', j)
+                if if_rules[i]['or'] == if_rules[j]['not'] or if_rules[j]['or'] == if_rules[i]['not']:
+                    rules[i].clear()
+                    rules[j].clear()
+                    print(i, ' another disagree ', j)
     for rule in rules:
         if rule != {}:
             right_rules.append(rule)
@@ -133,34 +142,35 @@ def check_rules_vs_facts(rules, facts):
     temp = 0
     size = 0
     for rule in rules:
-        for key in rule['if']:
-            if key == 'and':
-                for item in rule['if'][key]:
-                    size = len(rule['if'][key])
-                    if item in facts:
-                        temp += 1
-                if temp == size:
-                    result.append(rule['then'])
-                    temp = 0
-                else:
-                    result.append(0)
-                    temp = 0
-            if key == 'or':
-                for item in rule['if'][key]:
-                    if item in facts:
+        if rule != {}:
+            for key in rule['if']:
+                if key == 'and':
+                    for item in rule['if'][key]:
+                        size = len(rule['if'][key])
+                        if item in facts:
+                            temp += 1
+                    if temp == size:
                         result.append(rule['then'])
-                        break
-            if key == 'not':
-                for item in rule['if'][key]:
-                    size = len(rule['if'][key])
-                    if item not in facts:
-                        temp += 1
-                if temp == size:
-                    result.append(rule['then'])
-                    temp = 0
-                else:
-                    result.append(0)
-                    temp = 0
+                        temp = 0
+                    else:
+                        result.append(0)
+                        temp = 0
+                if key == 'or':
+                    for item in rule['if'][key]:
+                        if item in facts:
+                            result.append(rule['then'])
+                            break
+                if key == 'not':
+                    for item in rule['if'][key]:
+                        size = len(rule['if'][key])
+                        if item not in facts:
+                            temp += 1
+                    if temp == size:
+                        result.append(rule['then'])
+                        temp = 0
+                    else:
+                        result.append(0)
+                        temp = 0
     print(result)
     end_check = time()
     time_result = end_check - start_check
