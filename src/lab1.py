@@ -112,6 +112,8 @@ def check_rules(rules):
             if_rules.append(rule['if'])
         if rule['then']:
             then_rules.append(rule['then'])
+    for i in if_rules:
+        sorted(i.values())
     for i in range(size - 1):
         for j in range(i + 1, size):
             if if_rules[i] == if_rules[j] and then_rules[i] != then_rules[j]: # check "if A then B -> if A then C"
