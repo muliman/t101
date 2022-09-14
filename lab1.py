@@ -98,10 +98,6 @@ def generate_rand_facts(code_max, M):
     return facts
 
 
-def update_indexes(indexes_wrong):
-    for i in indexes_wrong:
-        i -= 1
-
 # not final version
 
 
@@ -110,8 +106,7 @@ def check_rules(rules):  # check "if A then B -> if A then C"
     if_rules = list()
     then_rules = list()
     size = len(rules)
-    indexes_wrong_rules = [0 for i in range(size)]
-    correct_rules = list()
+    right_rules = list()
     for rule in rules:
         if rule['if']:
             if_rules.append(rule['if'])
@@ -120,13 +115,16 @@ def check_rules(rules):  # check "if A then B -> if A then C"
     for i in range(size - 1):
         for j in range(i + 1, size):
             if if_rules[i] == if_rules[j] and then_rules[i] != then_rules[j]:
-                indexes_wrong_rules[i] = -1
-                indexes_wrong_rules[j] = -1
+                rules[i].clear()
+                rules[j].clear()
                 print(i, ' disagree ', j)
-    print('LEN ', indexes_wrong_rules)
+    for rule in rules:
+        if rule != {}:
+            right_rules.append(rule)
     end_check = time()
     time_result = end_check - start_check
     print('\ntime to check conflicts ', time_result)
+    return right_rules
 
 
 def check_rules_vs_facts(rules, facts):
@@ -184,10 +182,10 @@ facts = generate_rand_facts(100, M)
 print("%d rules generated in %f seconds" % (N, time() - time_start))
 # load and validate rules
 # YOUR CODE HERE
-check_rules(rules)
+right_rules = check_rules(rules)
 # check facts vs rules
 time_start = time()
 
 # YOUR CODE HERE
-check_rules_vs_facts(rules, facts)
+check_rules_vs_facts(right_rules, facts)
 print("%d facts validated vs %d rules in %f seconds" % (M, N, time() - time_start))
