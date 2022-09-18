@@ -116,19 +116,24 @@ def check_rules(rules):
         sorted(i.values())
     for i in range(size - 1):
         for j in range(i + 1, size):
-            if if_rules[i] == if_rules[j] and then_rules[i] != then_rules[j]: # check "if A then B -> if A then C"
-                rules[i].clear()
-                rules[j].clear()
-                print(i, ' disagree ', j)
-            if then_rules[i] == then_rules[j]:  # check "if and/or A then B -> if not A then B"
-                if if_rules[i]['and'] == if_rules[j]['not'] or if_rules[j]['and'] == if_rules[i]['not']:
+            try:
+                if if_rules[i] == if_rules[j] and then_rules[i] != then_rules[j]: # check "if A then B -> if A then C"
                     rules[i].clear()
                     rules[j].clear()
-                    print(i, ' another disagree ', j)
-                if if_rules[i]['or'] == if_rules[j]['not'] or if_rules[j]['or'] == if_rules[i]['not']:
-                    rules[i].clear()
-                    rules[j].clear()
-                    print(i, ' another disagree ', j)
+                    print(i, ' disagree ', j)
+                if then_rules[i] == then_rules[j]:  # check "if and/or A then B -> if not A then B"
+                    if ('and' in rules[i].keys() and 'not' in rules[j].keys) or ('and' in rules[j].keys() and 'not' in rules[i].keys):
+                        if if_rules[i]['and'] == if_rules[j]['not'] or if_rules[j]['and'] == if_rules[i]['not']:
+                            rules[i].clear()
+                            rules[j].clear()
+                            print(i, ' another disagree ', j)
+                    if ('or' in rules[i].keys() and 'not' in rules[j].keys) or ('or' in rules[j].keys() and 'not' in rules[i].keys):
+                        if if_rules[i]['or'] == if_rules[j]['not'] or if_rules[j]['or'] == if_rules[i]['not']:
+                            rules[i].clear()
+                            rules[j].clear()
+                            print(i, ' another disagree ', j)
+            except IndexError:
+                continue
     for rule in rules:
         if rule != {}:
             right_rules.append(rule)
@@ -185,19 +190,35 @@ print(generate_random_rules(100, 4, 10))
 print(generate_stairway_rules(100, 4, 10, ["or"]))
 print(generate_ring_rules(100, 4, 10, ["or"]))
 
-# generate rules and facts and check time
+# generate rules
 time_start = time()
 N = 10000
 M = 1000
 rules = generate_simple_rules(100, 4, N)
+random_rules = generate_random_rules(100, 4, N)
+stairway_rules = generate_stairway_rules(100, 4, N)
+ring_rules = generate_ring_rules(100, 4, N)
+
+# merge rules
+all_rules = list()
+for item in rules:
+    all_rules.append(item)
+for item in stairway_rules:
+    all_rules.append(item)
+for item in random_rules:
+    all_rules.append(item)
+for item in ring_rules:
+    all_rules.append(item)
+
+# generate facts
 facts = generate_rand_facts(100, M)
 print("%d rules generated in %f seconds" % (N, time() - time_start))
+
 # load and validate rules
-# YOUR CODE HERE
-right_rules = check_rules(rules)
+# check rules
+right_rules = check_rules(all_rules)
+
 # check facts vs rules
 time_start = time()
-
-# YOUR CODE HERE
 check_rules_vs_facts(right_rules, facts)
 print("%d facts validated vs %d rules in %f seconds" % (M, N, time() - time_start))
