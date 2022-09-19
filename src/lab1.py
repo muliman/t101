@@ -1,6 +1,6 @@
 from random import choice, shuffle, randint
 from time import time
-import matplotlib
+import matplotlib.pyplot as plt
 
 
 def generate_simple_rules(code_max, n_max, n_generate, log_oper_choice=["and", "or", "not"]):
@@ -141,6 +141,9 @@ def check_rules(rules):
     end_check = time()
     time_result = end_check - start_check
     print('\ntime to check conflicts ', time_result)
+    plt.plot([0, time_result], [1000, len(rules)], 'o-g', alpha=0.7, label="first", lw=5, mec='g', mew=4, ms=5)
+    plt.show()
+    plt.savefig('./graphics/first_graphic.png')
     return right_rules
 
 
@@ -183,44 +186,52 @@ def check_rules_vs_facts(rules, facts):
     end_check = time()
     time_result = end_check - start_check
     print('\ntime to check facts vs rules ', time_result)
+    plt.plot([0, time_result], [1000, len(rules)], 'o-b', alpha=0.7, label="first", lw=5, mec='b', mew=4, ms=5)
+    plt.show()
+    plt.savefig('./graphics/second_graphic.png')
 
 
-# samples:
-print(generate_simple_rules(100, 4, 10))
-print(generate_random_rules(100, 4, 10))
-print(generate_stairway_rules(100, 4, 10, ["or"]))
-print(generate_ring_rules(100, 4, 10, ["or"]))
+def main():
+    # samples:
+    print(generate_simple_rules(100, 4, 10))
+    print(generate_random_rules(100, 4, 10))
+    print(generate_stairway_rules(100, 4, 10, ["or"]))
+    print(generate_ring_rules(100, 4, 10, ["or"]))
 
-# generate rules
-time_start = time()
-N = 10000
-M = 1000
-rules = generate_simple_rules(100, 4, N)
-random_rules = generate_random_rules(100, 4, N)
-stairway_rules = generate_stairway_rules(100, 4, N)
-ring_rules = generate_ring_rules(100, 4, N)
+    # generate rules
+    time_start = time()
+    N = 1000
+    M = 1000
+    rules = generate_simple_rules(100, 4, N)
+    random_rules = generate_random_rules(100, 4, N)
+    stairway_rules = generate_stairway_rules(100, 4, N)
+    ring_rules = generate_ring_rules(100, 4, N)
 
-# merge rules
-all_rules = list()
-for item in rules:
-    all_rules.append(item)
-for item in stairway_rules:
-    all_rules.append(item)
-for item in random_rules:
-    all_rules.append(item)
-for item in ring_rules:
-    all_rules.append(item)
-sorted(all_rules, key=len)
+    # merge rules
+    all_rules = list()
+    for item in rules:
+        all_rules.append(item)
+    for item in stairway_rules:
+        all_rules.append(item)
+    for item in random_rules:
+        all_rules.append(item)
+    for item in ring_rules:
+        all_rules.append(item)
+    sorted(all_rules, key=len)
 
-# generate facts
-facts = generate_rand_facts(100, M)
-print("%d rules generated in %f seconds" % (N, time() - time_start))
+    # generate facts
+    facts = generate_rand_facts(100, M)
+    print("%d rules generated in %f seconds" % (N, time() - time_start))
 
-# load and validate rules
-# check rules
-right_rules = check_rules(all_rules)
+    # load and validate rules
+    # check rules
+    right_rules = check_rules(all_rules)
 
-# check facts vs rules
-time_start = time()
-check_rules_vs_facts(right_rules, facts)
-print("%d facts validated vs %d rules in %f seconds" % (M, N, time() - time_start))
+    # check facts vs rules
+    time_start = time()
+    check_rules_vs_facts(right_rules, facts)
+    print("%d facts validated vs %d rules in %f seconds" % (M, N, time() - time_start))
+
+
+if __name__ == '__main__':
+    main()
