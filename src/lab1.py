@@ -143,7 +143,6 @@ def check_rules(rules):
     print('\ntime to check conflicts ', time_result)
     plt.plot([0, time_result], [1000, len(rules)], 'o-g', alpha=0.7, label="first", lw=5, mec='g', mew=4, ms=5)
     plt.show()
-    plt.savefig('./graphics/rules.png')
     return right_rules
 
 
@@ -188,7 +187,6 @@ def check_rules_vs_facts(rules, facts):
     print('\ntime to check facts vs rules ', time_result)
     plt.plot([0, time_result], [1000, len(rules)], 'o-b', alpha=0.7, label="first", lw=5, mec='b', mew=4, ms=5)
     plt.show()
-    plt.savefig('./graphics/rules_vs_facts.png')
 
 
 def main():
