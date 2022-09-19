@@ -198,7 +198,7 @@ def main():
 
     # generate rules
     time_start = time()
-    N = 1000
+    N = 10000
     M = 1000
     rules = generate_simple_rules(100, 4, N)
     random_rules = generate_random_rules(100, 4, N)
