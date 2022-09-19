@@ -1,5 +1,6 @@
 from random import choice, shuffle, randint
 from time import time
+import matplotlib
 
 
 def generate_simple_rules(code_max, n_max, n_generate, log_oper_choice=["and", "or", "not"]):
@@ -209,6 +210,7 @@ for item in random_rules:
     all_rules.append(item)
 for item in ring_rules:
     all_rules.append(item)
+sorted(all_rules, key=len)
 
 # generate facts
 facts = generate_rand_facts(100, M)
