@@ -9,3 +9,5 @@
   docker run -it --rm lab1
 ```
 благодаря параметру **--rm** контейнер удалится после завершения работы скрипта
+
+google-colab (https://colab.research.google.com/drive/1tFLfYk9BcAffwzZGfO45sSiHHekaLBbZ?usp=sharing)
