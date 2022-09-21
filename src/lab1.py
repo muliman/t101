@@ -102,30 +102,23 @@ def generate_rand_facts(code_max, M):
 # not final version
 def set_rang(rules):
     rangs = [None] * len(rules)
-    temp = [None] * len(rules)
     then_rules = list()
     max_rang = 0
     for rule in rules:
+        if rule['then']:
+            then_rules.append(rule['then'])
+    for rule in rules:
         for keys in rule['if']:
             for item in rule['if'][keys]:
-                if temp[item] is None:
-                    if temp[item] in then_rules:
-                        rangs[item] = max_rang + 1
-                        temp[item] = 0
-                        if rangs[item] > max_rang:
-                            max_rang = rangs[item]
-                    else:
-                        rangs[item] = 0
-                        temp[item] = 0
-                        if rangs[item] > max_rang:
-                            max_rang = rangs[item]
-                if temp[rule['then']] is None:
-                    rangs[rule['then']] = max_rang + 1
-                    temp[rule['then']] = 0
+                if item in then_rules:
+                    rangs[item] = max_rang + 1
                     if rangs[item] > max_rang:
                         max_rang = rangs[item]
-        #max_rang = 0
-    del temp
+                else:
+                    rangs[item] = 0
+                    if rangs[item] > max_rang:
+                        max_rang = rangs[item]
+            max_rang = 0
     del then_rules
     return rangs
 
@@ -226,8 +219,8 @@ def main():
 
     # generate rules
     time_start = time()
-    N = 10000
-    M = 1000
+    N = 100
+    M = 100
     rules = generate_simple_rules(100, 4, N)
     random_rules = generate_random_rules(100, 4, N)
     stairway_rules = generate_stairway_rules(100, 4, N)
@@ -243,9 +236,8 @@ def main():
         all_rules.append(item)
     for item in ring_rules:
         all_rules.append(item)
-
     set_rang(all_rules)
-    #
+
     # generate facts
     facts = generate_rand_facts(100, M)
     print("%d rules generated in %f seconds" % (N, time() - time_start))
