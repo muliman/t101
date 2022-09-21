@@ -101,7 +101,7 @@ def generate_rand_facts(code_max, M):
 
 # not final version
 def set_rang(rules):
-    rangs = [None] * len(rules)
+    rangs = [-1] * len(rules)
     then_rules = list()
     max_rang = 0
     for rule in rules:
@@ -118,31 +118,59 @@ def set_rang(rules):
                     rangs[item] = 0
                     if rangs[item] > max_rang:
                         max_rang = rangs[item]
+            rangs[rule['then']] = max_rang + 1
             max_rang = 0
     del then_rules
-    return rangs
+    correct_rangs = list()
+    for i in rangs:
+        if i != -1:
+            correct_rangs.append(i)
+    return correct_rangs
+
+
+def max_rangs(rule, rangs):
+    max_rang_if = 0
+    for keys in rule['if']:
+        for value in rule['if'][keys]:
+            if rangs[value] > max_rang_if:
+                max_rang_if = rangs[value]
+    if rangs[rule['then']]:
+        if max_rang_if > rangs[rule['then']]:
+            max_rang = max_rang_if
+        else:
+            max_rang = rangs[rule['then']]
+    else:
+        max_rang = max_rang_if
+    return max_rang
+
+
+def sort_rangs(rules, rangs):
+    for i in range(len(rules) - 1):
+        for j in range(len(rules) - i - 1):
+            if max_rangs(rules[j], rangs) > max_rangs(rules[j+1], rangs):
+                rangs[j] = rangs[j+1]
+                temp_rang = rangs[j]
+                rangs[j+1] = temp_rang
+                rules[j] = rules[j+1]
+                temp_rule = rules[j]
+                rules[j+1] = temp_rule
 
 
 def check_rules(rules):
     start_check = time()
     if_rules = list()
     then_rules = list()
-    size = len(rules)
     right_rules = list()
+    rangs = set_rang(rules)
+    sort_rangs(rules, rangs)
     for rule in rules:
         if rule['if']:
             if_rules.append(rule['if'])
         if rule['then']:
             then_rules.append(rule['then'])
-    for i in if_rules:
-        sorted(i.values())
-    for i in range(size - 1):
-        for j in range(i + 1, size):
+    for i in range(len(rules) - 1):
+        for j in range(i + 1, len(rules)):
             try:
-                if if_rules[i] == if_rules[j] and then_rules[i] != then_rules[j]: # check "if A then B -> if A then C"
-                    rules[i].clear()
-                    rules[j].clear()
-                    print(i, ' disagree ', j)
                 if then_rules[i] == then_rules[j]:  # check "if and/or A then B -> if not A then B"
                     if ('and' in rules[i].keys() and 'not' in rules[j].keys) or ('and' in rules[j].keys() and 'not' in rules[i].keys):
                         if if_rules[i]['and'] == if_rules[j]['not'] or if_rules[j]['and'] == if_rules[i]['not']:
@@ -162,8 +190,8 @@ def check_rules(rules):
     end_check = time()
     time_result = end_check - start_check
     print('\ntime to check conflicts ', time_result)
-    plt.plot([0, time_result], [1000, len(rules)], 'o-g', alpha=0.7, label="first", lw=5, mec='g', mew=4, ms=5)
-    plt.show()
+    # plt.plot([0, time_result], [1000, len(rules)], 'o-g', alpha=0.7, label="first", lw=5, mec='g', mew=4, ms=5)
+    # plt.show()
     return right_rules
 
 
@@ -206,8 +234,8 @@ def check_rules_vs_facts(rules, facts):
     end_check = time()
     time_result = end_check - start_check
     print('\ntime to check facts vs rules ', time_result)
-    plt.plot([0, time_result], [1000, len(rules)], 'o-b', alpha=0.7, label="first", lw=5, mec='b', mew=4, ms=5)
-    plt.show()
+    # plt.plot([0, time_result], [1000, len(rules)], 'o-b', alpha=0.7, label="first", lw=5, mec='b', mew=4, ms=5)
+    # plt.show()
 
 
 def main():
@@ -221,10 +249,10 @@ def main():
     time_start = time()
     N = 100
     M = 100
-    rules = generate_simple_rules(100, 4, N)
-    random_rules = generate_random_rules(100, 4, N)
-    stairway_rules = generate_stairway_rules(100, 4, N)
-    ring_rules = generate_ring_rules(100, 4, N)
+    rules = generate_simple_rules(10, 4, N)
+    random_rules = generate_random_rules(10, 4, N)
+    stairway_rules = generate_stairway_rules(10, 4, N)
+    ring_rules = generate_ring_rules(10, 4, N)
 
     # merge rules
     all_rules = list()
@@ -236,7 +264,6 @@ def main():
         all_rules.append(item)
     for item in ring_rules:
         all_rules.append(item)
-    set_rang(all_rules)
 
     # generate facts
     facts = generate_rand_facts(100, M)
