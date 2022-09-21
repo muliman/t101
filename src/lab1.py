@@ -100,7 +100,7 @@ def generate_rand_facts(code_max, M):
 
 
 # not final version
-def set_rang(rules):
+def set_rang(rules):  # set rangs for rules
     rangs = [-1] * len(rules)
     then_rules = list()
     max_rang = 0
@@ -128,7 +128,7 @@ def set_rang(rules):
     return correct_rangs
 
 
-def max_rangs(rule, rangs):
+def max_rangs(rule, rangs):  # calculate max rang of rule
     max_rang_if = 0
     for keys in rule['if']:
         for value in rule['if'][keys]:
@@ -144,7 +144,7 @@ def max_rangs(rule, rangs):
     return max_rang
 
 
-def sort_rangs(rules, rangs):
+def sort_rangs(rules, rangs):  # sort rules by rang
     for i in range(len(rules) - 1):
         for j in range(len(rules) - i - 1):
             if max_rangs(rules[j], rangs) > max_rangs(rules[j+1], rangs):
