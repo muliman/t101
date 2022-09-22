@@ -160,7 +160,7 @@ def check_rules(rules):
     start_check = time()
     if_rules = list()
     then_rules = list()
-    right_rules = list()
+    correct_rules = list()
     #rangs = set_rang(rules)
     #sort_rangs(rules, rangs)
     for rule in rules:
@@ -168,7 +168,6 @@ def check_rules(rules):
             if_rules.append(rule['if'])
         if rule['then']:
             then_rules.append(rule['then'])
-    print(len(rules))
     for i in range(len(rules) - 1):
         for j in range(i + 1, len(rules)):
             if then_rules[i] == then_rules[j]:  # check "if and/or A then B -> if not A then B"
@@ -193,13 +192,13 @@ def check_rules(rules):
                     print(i, ' disagree ', j)
     for rule in rules:
         if rule != {}:
-            right_rules.append(rule)
+            correct_rules.append(rule)
     end_check = time()
     time_result = end_check - start_check
     print('\ntime to check conflicts ', time_result)
     # plt.plot([0, time_result], [1000, len(rules)], 'o-g', alpha=0.7, label="first", lw=5, mec='g', mew=4, ms=5)
     # plt.show()
-    return right_rules
+    return correct_rules
 
 
 def check_rules_vs_facts(rules, facts):
@@ -254,23 +253,12 @@ def main():
 
     # generate rules
     time_start = time()
-    N = 100
-    M = 100
-    rules = generate_simple_rules(10, 4, N)
-    random_rules = generate_random_rules(10, 4, N)
-    stairway_rules = generate_stairway_rules(10, 4, N)
-    ring_rules = generate_ring_rules(10, 4, N)
-
-    # merge rules
-    all_rules = list()
-    for item in rules:
-        all_rules.append(item)
-    for item in stairway_rules:
-        all_rules.append(item)
-    for item in random_rules:
-        all_rules.append(item)
-    for item in ring_rules:
-        all_rules.append(item)
+    N = 10000
+    M = 1000
+    rules = generate_simple_rules(100, 4, N)
+    random_rules = generate_random_rules(100, 4, N)
+    stairway_rules = generate_stairway_rules(100, 4, N)
+    ring_rules = generate_ring_rules(100, 4, N)
 
     # generate facts
     facts = generate_rand_facts(100, M)
@@ -278,11 +266,26 @@ def main():
 
     # load and validate rules
     # check rules
-    right_rules_simple = check_rules(rules)
+    print('check simple rules')
+    correct_simple = check_rules(rules)
+    print('check random rules')
+    correct_random = check_rules(random_rules)
+    print('check stairway rules')
+    correct_stairway = check_rules(stairway_rules)
+    #print('check ring rules')
+    #correct_ring = check_rules(ring_rules)
 
     # check facts vs rules
     time_start = time()
-    check_rules_vs_facts(right_rules_simple, facts)
+    print('simple vs facts')
+    check_rules_vs_facts(correct_simple, facts)
+    print('stairway vs facts')
+    check_rules_vs_facts(correct_stairway, facts)
+    print('random vs facts')
+    check_rules_vs_facts(correct_random, facts)
+    #print('ring vs facts')
+    #check_rules_vs_facts(correct_ring, facts)
+
     print("%d facts validated vs %d rules in %f seconds" % (M, N, time() - time_start))
 
 
