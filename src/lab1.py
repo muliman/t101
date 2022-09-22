@@ -122,9 +122,9 @@ def set_rang(rules):  # set rangs for rules
             max_rang = 0
     del then_rules
     correct_rangs = list()
-    for i in rangs:
-        if i != -1:
-            correct_rangs.append(i)
+    for item in rangs:
+        if item != -1:
+            correct_rangs.append(item)
     return correct_rangs
 
 
@@ -161,29 +161,36 @@ def check_rules(rules):
     if_rules = list()
     then_rules = list()
     right_rules = list()
-    rangs = set_rang(rules)
-    sort_rangs(rules, rangs)
+    #rangs = set_rang(rules)
+    #sort_rangs(rules, rangs)
     for rule in rules:
         if rule['if']:
             if_rules.append(rule['if'])
         if rule['then']:
             then_rules.append(rule['then'])
+    print(len(rules))
     for i in range(len(rules) - 1):
         for j in range(i + 1, len(rules)):
-            try:
-                if then_rules[i] == then_rules[j]:  # check "if and/or A then B -> if not A then B"
-                    if ('and' in rules[i].keys() and 'not' in rules[j].keys) or ('and' in rules[j].keys() and 'not' in rules[i].keys):
-                        if if_rules[i]['and'] == if_rules[j]['not'] or if_rules[j]['and'] == if_rules[i]['not']:
-                            rules[i].clear()
-                            rules[j].clear()
-                            print(i, ' another disagree ', j)
-                    if ('or' in rules[i].keys() and 'not' in rules[j].keys) or ('or' in rules[j].keys() and 'not' in rules[i].keys):
-                        if if_rules[i]['or'] == if_rules[j]['not'] or if_rules[j]['or'] == if_rules[i]['not']:
-                            rules[i].clear()
-                            rules[j].clear()
-                            print(i, ' another disagree ', j)
-            except IndexError:
-                continue
+            if then_rules[i] == then_rules[j]:  # check "if and/or A then B -> if not A then B"
+                if ('and' in rules[i].keys() and 'not' in rules[j].keys) or ('and' in rules[j].keys() and 'not' in rules[i].keys):
+                    if if_rules[j]['and'] == if_rules[i]['not'] or if_rules[i]['and'] == if_rules[j]['not']:
+                        rules[j].clear()
+                        rules[i].clear()
+                        print(i, ' disagree ', j)
+                if ('or' in rules[j].keys() and 'not' in rules[i].keys) or ('or' in rules[i].keys() and 'not' in rules[j].keys):
+                    if if_rules[j]['or'] == if_rules[i]['not'] or if_rules[i]['or'] == if_rules[j]['not']:
+                        rules[j].clear()
+                        rules[i].clear()
+                        print(i, ' disagree ', j)
+            if 'not' in if_rules[i].keys() and 'not' in if_rules[j].keys(): # check "if not A then B -> if not B then A"
+                if then_rules[i] in if_rules[j]['not'] and then_rules[j] in if_rules[i]['not']:
+                    rules[i].clear()
+                    rules[j].clear()
+                    print(i, ' disagree ', j)  # check "if not A then B -> if not C then A"
+                if then_rules[i] in if_rules[j]['not'] and then_rules[j] not in if_rules[i]['not']:
+                    rules[i].clear()
+                    rules[j].clear()
+                    print(i, ' disagree ', j)
     for rule in rules:
         if rule != {}:
             right_rules.append(rule)
@@ -271,11 +278,11 @@ def main():
 
     # load and validate rules
     # check rules
-    right_rules = check_rules(all_rules)
+    right_rules_simple = check_rules(rules)
 
     # check facts vs rules
     time_start = time()
-    check_rules_vs_facts(right_rules, facts)
+    check_rules_vs_facts(right_rules_simple, facts)
     print("%d facts validated vs %d rules in %f seconds" % (M, N, time() - time_start))
 
 
