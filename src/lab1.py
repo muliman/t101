@@ -81,7 +81,7 @@ def generate_random_rules(code_max, n_max, n_generate, log_oper_choice=["and", "
             },
             'then': randint(1, code_max)
         }
-    rules.append(rule)
+        rules.append(rule)
     shuffle(rules)
     return (rules)
 
@@ -170,6 +170,8 @@ def check_rules(rules):
             then_rules.append(rule['then'])
     for i in range(len(rules) - 1):
         for j in range(i + 1, len(rules)):
+            if i >= j:
+                return 0
             if then_rules[i] == then_rules[j]:  # check "if and/or A then B -> if not A then B"
                 if ('and' in rules[i].keys() and 'not' in rules[j].keys) or ('and' in rules[j].keys() and 'not' in rules[i].keys):
                     if if_rules[j]['and'] == if_rules[i]['not'] or if_rules[i]['and'] == if_rules[j]['not']:
@@ -272,8 +274,8 @@ def main():
     correct_random = check_rules(random_rules)
     print('check stairway rules')
     correct_stairway = check_rules(stairway_rules)
-    #print('check ring rules')
-    #correct_ring = check_rules(ring_rules)
+    # print('check ring rules')
+    # correct_ring = check_rules(ring_rules)
 
     # check facts vs rules
     time_start = time()
@@ -283,8 +285,8 @@ def main():
     check_rules_vs_facts(correct_stairway, facts)
     print('random vs facts')
     check_rules_vs_facts(correct_random, facts)
-    #print('ring vs facts')
-    #check_rules_vs_facts(correct_ring, facts)
+    # print('ring vs facts')
+    # check_rules_vs_facts(correct_ring, facts)
 
     print("%d facts validated vs %d rules in %f seconds" % (M, N, time() - time_start))
 
