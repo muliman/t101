@@ -101,7 +101,7 @@ def generate_rand_facts(code_max, M):
 
 # not final version
 def set_rang(rules):  # set rangs for rules
-    rangs = [-1] * len(rules)
+    rangs = [-1] * 2 * len(rules)
     then_rules = list()
     max_rang = 0
     for rule in rules:
@@ -125,6 +125,7 @@ def set_rang(rules):  # set rangs for rules
     for item in rangs:
         if item != -1:
             correct_rangs.append(item)
+    #correct_rangs.append(-1)
     return correct_rangs
 
 
@@ -161,8 +162,8 @@ def check_rules(rules):
     if_rules = list()
     then_rules = list()
     correct_rules = list()
-    #rangs = set_rang(rules)
-    #sort_rangs(rules, rangs)
+    rangs = set_rang(rules)
+    sort_rangs(rules, rangs)
     for rule in rules:
         if rule['if']:
             if_rules.append(rule['if'])
