@@ -44,7 +44,7 @@ def generate_simple_rules(code_max, n_max, n_generate, log_oper_choice=["and", "
         }
         rules.append(rule)
     shuffle(rules)
-    return (rules)
+    return rules
 
 
 def generate_stairway_rules(code_max, n_max, n_generate, log_oper_choice=["and", "or", "not"]):
@@ -74,7 +74,7 @@ def generate_stairway_rules(code_max, n_max, n_generate, log_oper_choice=["and",
         }
         rules.append(rule)
     shuffle(rules)
-    return (rules)
+    return rules
 
 
 def generate_ring_rules(code_max, n_max, n_generate, log_oper_choice=["and", "or", "not"]):
@@ -103,7 +103,7 @@ def generate_ring_rules(code_max, n_max, n_generate, log_oper_choice=["and", "or
     }
     rules.append(rule)
     shuffle(rules)
-    return (rules)
+    return rules
 
 
 def generate_random_rules(code_max, n_max, n_generate, log_oper_choice=["and", "or", "not"]):
@@ -133,7 +133,7 @@ def generate_random_rules(code_max, n_max, n_generate, log_oper_choice=["and", "
         }
         rules.append(rule)
     shuffle(rules)
-    return (rules)
+    return rules
 
 
 def generate_seq_facts(number_facts):
@@ -349,7 +349,7 @@ def main():
 
     # generate facts
     facts = generate_rand_facts(100, number_facts)
-    print("%d rules generated in %f seconds" % (number_rules, time() - time_start))
+    print("%d rules for each type generated in %f seconds" % (number_rules, time() - time_start))
 
     # merge rules
     all_rules = list()
@@ -361,7 +361,6 @@ def main():
         all_rules.append(rule)
     for rule in ring_rules:
         all_rules.append(rule)
-    print(len(all_rules))
 
     # load and validate rules
     # check rules
@@ -371,7 +370,7 @@ def main():
     time_start = time()
     check_rules_vs_facts(correct_rules, facts)
 
-    print("%d facts validated vs %d rules in %f seconds" % (number_facts, number_rules, time() - time_start))
+    print("%d facts validated vs %d rules in %f seconds" % (number_facts, 4*number_rules, time() - time_start))
 
 
 if __name__ == '__main__':
