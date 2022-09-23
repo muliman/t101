@@ -19,6 +19,14 @@ from time import time
 
 
 def generate_simple_rules(code_max, n_max, n_generate, log_oper_choice=["and", "or", "not"]):
+    """ Function generate simple rules
+            Args :
+                    code_max - max value
+                    n_max - max number of elements in condition
+                    log_oper_choice - operation in rule
+            Returns :
+                    rules - generating rules
+        """
     rules = []
     for j in range(0, n_generate):
         log_oper = choice(log_oper_choice)  # not means and-not (neither)
@@ -40,6 +48,12 @@ def generate_simple_rules(code_max, n_max, n_generate, log_oper_choice=["and", "
 
 
 def generate_stairway_rules(code_max, n_max, n_generate, log_oper_choice=["and", "or", "not"]):
+    """ Function generate simple rules
+                Args :
+                        code_max - max value
+                        n_max - max number of elements
+                        log_oper_choice - operation in rule
+            """
     rules = []
     for j in range(0, n_generate):
         log_oper = choice(log_oper_choice)  # not means and-not (neither)
