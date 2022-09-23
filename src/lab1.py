@@ -1,6 +1,21 @@
+""""
+    Module lab1 - used to building an expert base and knowledge
+      Functions:
+        generate_simple_rules - function that generates simple rules for check
+        generate_stairway_rules - function that generates stairway rules for check
+        generate_ring_rules - function that generates ring rules for check
+        generate_random_rules - function that generates random rules for check
+        generate_seq_facts - function that generates seq facts
+        generate_rand_facts - function that generates random facts
+        set_rang - function that establishes facts
+        max_rangs - function that calculates max rang of rule
+        sort_rangs - function that sorts list of rules by rang of rule
+        check_rules - function that checks rules conflicts
+        check_rules_vs_facts - function that checks facts
+        main - main function
+    """
 from random import choice, shuffle, randint
 from time import time
-import matplotlib.pyplot as plt
 
 
 def generate_simple_rules(code_max, n_max, n_generate, log_oper_choice=["and", "or", "not"]):
@@ -86,15 +101,15 @@ def generate_random_rules(code_max, n_max, n_generate, log_oper_choice=["and", "
     return (rules)
 
 
-def generate_seq_facts(M):
-    facts = list(range(0, M))
+def generate_seq_facts(number_facts):
+    facts = list(range(0, number_facts))
     shuffle(facts)
     return facts
 
 
-def generate_rand_facts(code_max, M):
+def generate_rand_facts(code_max, number_facts):
     facts = []
-    for i in range(0, M):
+    for i in range(0, number_facts):
         facts.append(randint(0, code_max))
     return facts
 
@@ -198,8 +213,6 @@ def check_rules(rules):
     end_check = time()
     time_result = end_check - start_check
     print('\ntime to check conflicts ', time_result)
-    # plt.plot([0, time_result], [1000, len(rules)], 'o-g', alpha=0.7, label="first", lw=5, mec='g', mew=4, ms=5)
-    # plt.show()
     return correct_rules
 
 
@@ -242,23 +255,21 @@ def check_rules_vs_facts(rules, facts):
     end_check = time()
     time_result = end_check - start_check
     print('\ntime to check facts vs rules ', time_result)
-    # plt.plot([0, time_result], [1000, len(rules)], 'o-b', alpha=0.7, label="first", lw=5, mec='b', mew=4, ms=5)
-    # plt.show()
 
 
 def main():
     # generate rules
     time_start = time()
-    N = 10000
-    M = 1000
-    rules = generate_simple_rules(100, 4, N)
-    random_rules = generate_random_rules(100, 4, N)
-    stairway_rules = generate_stairway_rules(100, 4, N)
-    ring_rules = generate_ring_rules(100, 4, N)
+    number_rules = 10000
+    number_facts = 1000
+    rules = generate_simple_rules(100, 4, number_rules)
+    random_rules = generate_random_rules(100, 4, number_rules)
+    stairway_rules = generate_stairway_rules(100, 4, number_rules)
+    ring_rules = generate_ring_rules(100, 4, number_rules)
 
     # generate facts
-    facts = generate_rand_facts(100, M)
-    print("%d rules generated in %f seconds" % (N, time() - time_start))
+    facts = generate_rand_facts(100, number_facts)
+    print("%d rules generated in %f seconds" % (number_rules, time() - time_start))
 
     # merge rules
     all_rules = list()
@@ -278,9 +289,9 @@ def main():
 
     # check facts vs rules
     time_start = time()
-    check_rules_vs_facts(correct_rules,facts)
+    check_rules_vs_facts(correct_rules, facts)
 
-    print("%d facts validated vs %d rules in %f seconds" % (M, N, time() - time_start))
+    print("%d facts validated vs %d rules in %f seconds" % (number_facts, number_rules, time() - time_start))
 
 
 if __name__ == '__main__':
