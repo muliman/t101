@@ -226,8 +226,8 @@ def sort_rangs(rules, rangs):  # sort rules by rang
                         rules - our rules
                         rangs - list rangs of rules
     """
-    for i in range(len(rules) - 1):
-        for j in range(len(rules) - i - 1):
+    for i in range(len(rangs) - 1):
+        for j in range(len(rangs) - i - 1):
             if max_rangs(rules[j], rangs) > max_rangs(rules[j+1], rangs):
                 rangs[j] = rangs[j+1]
                 temp_rang = rangs[j]
@@ -244,12 +244,9 @@ def check_rules(rules):
                 Returns :
                         correct_rules - rules without conflicts
     """
-    start_check = time()
     if_rules = list()
     then_rules = list()
     correct_rules = list()
-    #rangs = set_rang(rules)
-    #sort_rangs(rules, rangs)
     for rule in rules:
         if rule['if']:
             if_rules.append(rule['if'])
@@ -264,27 +261,20 @@ def check_rules(rules):
                     if if_rules[j]['and'] == if_rules[i]['not'] or if_rules[i]['and'] == if_rules[j]['not']:
                         rules[j].clear()
                         rules[i].clear()
-                        print(i, ' disagree ', j)
                 if ('or' in rules[j].keys() and 'not' in rules[i].keys) or ('or' in rules[i].keys() and 'not' in rules[j].keys):
                     if if_rules[j]['or'] == if_rules[i]['not'] or if_rules[i]['or'] == if_rules[j]['not']:
                         rules[j].clear()
                         rules[i].clear()
-                        print(i, ' disagree ', j)
             if 'not' in if_rules[i].keys() and 'not' in if_rules[j].keys(): # check "if not A then B -> if not B then A"
-                if then_rules[i] in if_rules[j]['not'] and then_rules[j] in if_rules[i]['not']:
+                if then_rules[i] in if_rules[j]['not'] and then_rules[j] in if_rules[i]['not']:  # взаимное исключение
+                    rules[i].clear()
+                    rules[j].clear()  # check "if not A then B -> if not C then A"
+                if then_rules[i] in if_rules[j]['not'] and then_rules[j] not in if_rules[i]['not']:  # вложенность
                     rules[i].clear()
                     rules[j].clear()
-                    print(i, ' disagree ', j)  # check "if not A then B -> if not C then A"
-                if then_rules[i] in if_rules[j]['not'] and then_rules[j] not in if_rules[i]['not']:
-                    rules[i].clear()
-                    rules[j].clear()
-                    print(i, ' disagree ', j)
     for rule in rules:
         if rule != {}:
             correct_rules.append(rule)
-    end_check = time()
-    time_result = end_check - start_check
-    print('\ntime to check conflicts ', time_result)
     return correct_rules
 
 
@@ -294,10 +284,12 @@ def check_rules_vs_facts(rules, facts):
                         rules - our rules
                         facts - our generating facts
     """
-    start_check = time()
     result = list()
     temp = 0
     size = 0
+    rangs = set_rang(rules)
+    sort_rangs(rules, rangs)
+    start_check = time()
     for rule in rules:
         if rule != {}:
             for key in rule['if']:
@@ -323,10 +315,10 @@ def check_rules_vs_facts(rules, facts):
                         if item not in facts:
                             temp += 1
                     if temp == size:
-                        result.append(rule['then'])
+                        result.append(rule['then'])  # если факт верен, записываем результат
                         temp = 0
                     else:
-                        result.append(0)
+                        result.append(0)  # если факт неверен, записываем 0
                         temp = 0
     print(result)
     end_check = time()
