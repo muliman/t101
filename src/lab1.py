@@ -299,13 +299,13 @@ def check_rules_vs_facts(rules, facts):
                         if item in facts:
                             temp += 1
                     if temp == size:
-                        result.append(rule['then'])
+                        result.append(rule['then'])  # если факт верен, записываем результат
                         temp = 0
                     else:
-                        result.append(0)
+                        result.append(0)    # если факт неверен, записываем 0
                         temp = 0
                 if key == 'or':
-                    for item in rule['if'][key]:
+                    for item in rule['if'][key]:    # если факт верен, записываем результат
                         if item in facts:
                             result.append(rule['then'])
                             break
