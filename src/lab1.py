@@ -298,7 +298,7 @@ def check_rules_vs_facts(rules, facts):
                         size = len(rule['if'][key])
                         if item in facts:
                             temp += 1
-                    if temp == size:
+                    if temp == size-1:
                         result.append(rule['then'])  # если факт верен, записываем результат
                         temp = 0
                     else:
@@ -309,6 +309,10 @@ def check_rules_vs_facts(rules, facts):
                         if item in facts:
                             result.append(rule['then'])
                             break
+                        else:
+                            temp += 1
+                            if temp == size:
+                                result.append(0)
                 if key == 'not':
                     for item in rule['if'][key]:
                         size = len(rule['if'][key])
