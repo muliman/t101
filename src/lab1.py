@@ -190,11 +190,11 @@ def set_rang(rules):  # set rangs for rules
             rangs[rule['then']] = max_rang + 1
             max_rang = 0
     del then_rules
-    correct_rangs = list()
-    for item in rangs:
-        if item != -1:
-            correct_rangs.append(item)
-    return correct_rangs
+    # correct_rangs = list()
+    # for item in rangs:
+    #     if item != -1:
+    #         correct_rangs.append(item)
+    return rangs
 
 
 def max_rangs(rule, rangs):  # calculate max rang of rule
@@ -287,8 +287,8 @@ def check_rules_vs_facts(rules, facts):
     result = list()
     temp = 0
     size = 0
-    rangs = set_rang(rules)
-    sort_rangs(rules, rangs)
+    # rangs = set_rang(rules)
+    # sort_rangs(rules, rangs)
     start_check = time()
     for rule in rules:
         if rule != {}:
@@ -296,7 +296,7 @@ def check_rules_vs_facts(rules, facts):
                 if key == 'and':
                     for item in rule['if'][key]:
                         size = len(rule['if'][key])
-                        if item in facts:
+                        if item in facts:  # если каждый элемент правила в массиве фактов, то факт верный
                             temp += 1
                     if temp == size-1:
                         result.append(rule['then'])  # если факт верен, записываем результат
@@ -344,29 +344,25 @@ def main():
     ring_rules = generate_ring_rules(100, 4, number_rules)
 
     # generate facts
-    facts = generate_rand_facts(100, number_facts)
+    facts = generate_rand_facts(1000, number_facts)
+    unique_facts = set(facts)
     print("%d rules for each type generated in %f seconds" % (number_rules, time() - time_start))
 
-    # merge rules
-    all_rules = list()
-    for rule in rules:
-        all_rules.append(rule)
-    for rule in stairway_rules:
-        all_rules.append(rule)
-    for rule in random_rules:
-        all_rules.append(rule)
-    for rule in ring_rules:
-        all_rules.append(rule)
-
-    # load and validate rules
     # check rules
-    correct_rules = check_rules(all_rules)
+    correct_simple = check_rules(rules)
+    correct_random = check_rules(random_rules)
+    correct_stairway = check_rules(stairway_rules)
+    correct_ring = check_rules(ring_rules)
 
     # check facts vs rules
-    time_start = time()
-    check_rules_vs_facts(correct_rules, facts)
-
-    print("%d facts validated vs %d rules in %f seconds" % (number_facts, 4*number_rules, time() - time_start))
+    print('check simple vs facts')
+    check_rules_vs_facts(correct_simple, unique_facts)
+    print('check random vs facts')
+    check_rules_vs_facts(correct_random, unique_facts)
+    print('check stairway vs facts')
+    check_rules_vs_facts(correct_stairway, unique_facts)
+    print('check ring vs facts')
+    check_rules_vs_facts(correct_ring, unique_facts)
 
 
 if __name__ == '__main__':
