@@ -162,7 +162,6 @@ def generate_rand_facts(code_max, number_facts):
     return facts
 
 
-# not final version
 def set_rang(rules):  # set rangs for rules
     """ Function set rangs for rules
                 Args :
@@ -190,10 +189,6 @@ def set_rang(rules):  # set rangs for rules
             rangs[rule['then']] = max_rang + 1
             max_rang = 0
     del then_rules
-    # correct_rangs = list()
-    # for item in rangs:
-    #     if item != -1:
-    #         correct_rangs.append(item)
     return rangs
 
 
@@ -287,47 +282,57 @@ def check_rules_vs_facts(rules, facts):
     result = list()
     temp = 0
     size = 0
-    # rangs = set_rang(rules)
-    # sort_rangs(rules, rangs)
-    start_check = time()
+    and_rules = list()
+    or_rules = list()
+    not_rules = list()
     for rule in rules:
         if rule != {}:
-            for key in rule['if']:
+            for key in rule['if'].keys():
                 if key == 'and':
-                    for item in rule['if'][key]:
-                        size = len(rule['if'][key])
-                        if item in facts:  # если каждый элемент правила в массиве фактов, то факт верный
-                            temp += 1
-                    if temp == size-1:
-                        result.append(rule['then'])  # если факт верен, записываем результат
-                        temp = 0
-                    else:
-                        result.append(0)    # если факт неверен, записываем 0
-                        temp = 0
+                    and_rules.append(rule)
                 if key == 'or':
-                    for item in rule['if'][key]:    # если факт верен, записываем результат
-                        if item in facts:
-                            result.append(rule['then'])
-                            break
-                        else:
-                            temp += 1
-                            if temp == size:
-                                result.append(0)
+                    or_rules.append(rule)
                 if key == 'not':
-                    for item in rule['if'][key]:
-                        size = len(rule['if'][key])
-                        if item not in facts:
-                            temp += 1
-                    if temp == size:
-                        result.append(rule['then'])  # если факт верен, записываем результат
-                        temp = 0
-                    else:
-                        result.append(0)  # если факт неверен, записываем 0
-                        temp = 0
+                    not_rules.append(rule)
+    start_check = time()
+    for rule in and_rules:  # check rules with 'and'
+        for item in rule['if']['and']:
+            size = len(rule['if']['and'])
+            if item in facts:  # если каждый элемент правила в массиве фактов, то факт верный
+                temp += 1
+        if temp == size:
+            result.append(rule['then'])  # если факт верен, записываем результат
+            temp = 0
+        else:
+            result.append(0)  # если факт неверен, записываем 0
+            temp = 0
+    for rule in or_rules:  # check rules with 'or;
+        for item in rule['if']['or']:
+            size = len(rule['if']['or'])
+            if item in facts:
+                result.append(rule['then'])
+                temp = 0
+                break
+            else:
+                temp += 1
+                if temp == size:
+                    result.append(0)
+                    temp = 0
+    for rule in not_rules:  # check rules with 'not'
+        for item in rule['if']['not']:
+            size = len(rule['if']['not'])
+            if item not in facts:
+                temp += 1
+        if temp == size:
+            result.append(rule['then'])
+            temp = 0
+        else:
+            result.append(0)
+            temp = 0
     print(result)
     end_check = time()
     time_result = end_check - start_check
-    print('\ntime to check facts vs rules ', time_result)
+    print(f'time to check facts vs rules {time_result}\n')
 
 
 def main():
