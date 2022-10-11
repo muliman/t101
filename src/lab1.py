@@ -239,6 +239,7 @@ def check_rules(rules):
                 Returns :
                         correct_rules - rules without conflicts
     """
+    print('start check rules conflicts')
     if_rules = list()
     then_rules = list()
     correct_rules = list()
@@ -270,6 +271,7 @@ def check_rules(rules):
     for rule in rules:
         if rule != {}:
             correct_rules.append(rule)
+    print('end check rules conflicts')
     return correct_rules
 
 
